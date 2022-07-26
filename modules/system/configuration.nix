@@ -77,6 +77,7 @@
 
     # Enable the OpenSSH daemon.
     services.openssh.enable = true;
+    services.openssh.extraConfig = "AllowAgentForwarding yes";
 
     # Set up networking and secure it
     networking = {
