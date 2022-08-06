@@ -1,8 +1,7 @@
 { config, lib, inputs, ...}:
 
 {
-    imports = [ ../../modules/default.nix ];
-    imports = [ ./zfs.nix ];
+    imports = [ ../../modules/default.nix ./zfs.nix  ];
     config.modules = {
         # gui
         firefox.enable = true;
