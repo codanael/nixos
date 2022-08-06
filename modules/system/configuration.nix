@@ -41,7 +41,6 @@
         systemd-boot.enable = true;
         systemd-boot.editor = false;
         efi.canTouchEfiVariables = true;
-        efi.efiSysMountPoint = "/boot/efi";
         timeout = 3;
         };
     };
