@@ -51,6 +51,7 @@
                 # Now, defining a new system is can be done in one line
                 #                                Architecture   Hostname
                 laptop = mkSystem inputs.nixpkgs "x86_64-linux" "laptop";
+                dell-laptop = mkSystem inputs.nixpkgs "x86_64-linux" "dell-laptop";
             };
     };
 }
