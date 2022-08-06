@@ -24,5 +24,7 @@
   };
   environment.etc."machine-id".source
     = "/persist/etc/machine-id";
-users.users.root.initialHashedPassword = "$6$Gaj6FZyEFgmKXza2$xBB1meV9wzjFLYTzH31X9i56R4RfxBVEdLEtedVK.GGZM5aFXms/jqN1FUF7czCvce1PVoiZyLYY66.Z9hLAi1";
+  environment.etc."shadow".source
+    = "/persist/etc/shadow";
+users.users.root.initialHashedPassword = "$6$32v1l1wPEx3D3Tna$2aEqz7c42DZEwfmuZanIJAYWJO/39fvdPnaxM3QECsLddArN4bm8xYFf6DwjDJKpMTlrddbRutbWD08x.6mFj.";
 }
