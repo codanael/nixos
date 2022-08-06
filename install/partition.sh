@@ -4,6 +4,7 @@ disk=(/dev/disk/by-id/ata-QEMU_HARDDISK_QM00003)
 swap=8GiB
 encryption=false
 zfsparam=""
+user="anael"
 
 
 # Check if disk var is set
@@ -63,13 +64,13 @@ zfs create -o canmount=on -o mountpoint=/persist rpool/persist
 zfs create -o canmount=off -o mountpoint=/ rpool/userdata
 zfs create -o canmount=on rpool/userdata/home
 zfs create -o canmount=on -o mountpoint=/root rpool/userdata/home/root
-zfs create -o canmount=on rpool/userdata/home/anael
-zfs create -o canmount=on rpool/userdata/home/anael/Desktop
-zfs create -o canmount=on rpool/userdata/home/anael/Downloads
-zfs create -o canmount=on rpool/userdata/home/anael/Documents
-zfs create -o canmount=on rpool/userdata/home/anael/Music
-zfs create -o canmount=on rpool/userdata/home/anael/Videos
-zfs create -o canmount=on rpool/userdata/home/anael/Pictures
+zfs create -o canmount=on rpool/userdata/home/$user
+zfs create -o canmount=on rpool/userdata/home/$user/Desktop
+zfs create -o canmount=on rpool/userdata/home/$user/Downloads
+zfs create -o canmount=on rpool/userdata/home/$user/Documents
+zfs create -o canmount=on rpool/userdata/home/$user/Music
+zfs create -o canmount=on rpool/userdata/home/$user/Videos
+zfs create -o canmount=on rpool/userdata/home/$user/Pictures
 
 mkdir -p /mnt/persist/etc/NetworkManager/system-connections
 mkdir -p /mnt/persist/var/lib/bluetooth
