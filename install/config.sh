@@ -78,6 +78,6 @@ tee -a /mnt/etc/nixos/zfs.nix <<EOF
 }
 EOF
 
-cp ./configuration.nix /mnt/nixos/etc -v
+cp ./configuration.nix /mnt/etc/nixos -v
 
 echo "nixos-install -v --show-trace --no-root-passwd --root /mnt && umount -Rl /mnt && zpool export -a"
