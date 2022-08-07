@@ -24,7 +24,5 @@
   };
   environment.etc."machine-id".source
     = "/persist/etc/machine-id";
-  environment.etc."shadow".source
-    = "/persist/etc/shadow";
 users.users.root.initialHashedPassword = "$6$32v1l1wPEx3D3Tna$2aEqz7c42DZEwfmuZanIJAYWJO/39fvdPnaxM3QECsLddArN4bm8xYFf6DwjDJKpMTlrddbRutbWD08x.6mFj.";
 }

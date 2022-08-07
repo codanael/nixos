@@ -77,8 +77,10 @@ mkdir -p /mnt/persist/var/lib/bluetooth
 mkdir -p /mnt/persist/etc/ssh
 mkdir -p /mnt/persist/etc/nixos
 mkdir -p /mnt/etc/nixos
+touch /mnt/persist/etc/shadow
 
 mount --bind /mnt/persist/etc/nixos /mnt/etc/nixos
+mount --bind /mnt/persist/etc/shadow /mnt/etc/shadow
 
 mkdir /mnt/boot
 mount "${disk}-part3" /mnt/boot
