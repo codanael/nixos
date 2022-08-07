@@ -76,7 +76,4 @@ users.users.root.initialHashedPassword = "${rootPwd}";
 }
 EOF
 
-echo "nixos-install -v --show-trace --no-root-passwd --root /mnt"
-
-echo "umount -Rl /mnt && zpool export -a"
-
+echo "nixos-install -v --show-trace --no-root-passwd --root /mnt && umount -Rl /mnt && zpool export -a"
