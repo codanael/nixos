@@ -51,15 +51,11 @@ zpool create \
   $zfsparam rpool \
   "${disk[@]/%/-part1}"
 
-mount -t tmpfs tmpfs /mnt
-
 zfs create -o refreservation=1G -o mountpoint=none rpool/reserved
-zfs create -o canmount=off -o mountpoint=/ rpool/nixos
+zfs create -o canmount=on -o mountpoint=/ rpool/nixos
 zfs create -o canmount=on -o atime=off rpool/nixos/nix
-zfs create -o canmount=off -o mountpoint=/var rpool/nixos/var
+zfs create -o canmount=on -o mountpoint=/var rpool/nixos/var
 zfs create -o canmount=on  rpool/nixos/var/log
-
-zfs create -o canmount=on -o mountpoint=/persist rpool/persist
 
 zfs create -o canmount=off -o mountpoint=/ rpool/userdata
 zfs create -o canmount=on rpool/userdata/home
@@ -72,13 +68,7 @@ zfs create -o canmount=on rpool/userdata/home/$user/Music
 zfs create -o canmount=on rpool/userdata/home/$user/Videos
 zfs create -o canmount=on rpool/userdata/home/$user/Pictures
 
-mkdir -p /mnt/persist/etc/NetworkManager/system-connections
-mkdir -p /mnt/persist/var/lib/bluetooth
-mkdir -p /mnt/persist/etc/ssh
-mkdir -p /mnt/persist/etc/nixos
-mkdir -p /mnt/etc/nixos
-
-mount --bind /mnt/persist/etc/nixos /mnt/etc/nixos
+chown -R 1000:100 /mnt/home/$user
 
 mkdir /mnt/boot
 mount "${disk}-part3" /mnt/boot

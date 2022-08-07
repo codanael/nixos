@@ -18,13 +18,8 @@ done
 
 swapconf="$swapconf ];"
 
-cp /etc/machine-id /mnt/persist/etc
-
 mv /mnt/etc/nixos/hardware-configuration.nix /mnt/etc/nixos/hardware-configuration-zfs.nix 
 sed -i "s|./hardware-configuration.nix|./hardware-configuration-zfs.nix ./zfs.nix|g" /mnt/etc/nixos/configuration.nix
-
-sed -i 's|fsType = "tmpfs";|fsType = "tmpfs"; options = [ "defaults" "size=4G" "mode=755" ];|g' \
-/mnt/etc/nixos/hardware-configuration-zfs.nix
 
 sed -i 's|fsType = "zfs";|fsType = "zfs"; options = [ "zfsutil" "X-mount.mkdir" ];|g' \
 /mnt/etc/nixos/hardware-configuration-zfs.nix
@@ -48,26 +43,7 @@ EOF
 tee -a /mnt/etc/nixos/zfs.nix <<EOF
   services.openssh = {
     enable = true;
-    hostKeys = [
-      {
-        path = "/persist/etc/ssh/ssh_host_ed25519_key";
-        type = "ed25519";
-      }
-      {
-        path = "/persist/etc/ssh/ssh_host_rsa_key";
-        type = "rsa";
-        bits = 4096;
-      }
-    ];
   };
-  systemd.tmpfiles.rules = [
-    "L /var/lib/bluetooth - - - - /persist/var/lib/bluetooth"
-  ];
-  environment.etc."NetworkManager/system-connections" = {
-    source = "/persist/etc/NetworkManager/system-connections/";
-  };
-  environment.etc."machine-id".source
-    = "/persist/etc/machine-id";
 EOF
 
 initPwd=$(mkpasswd -m SHA-512 -s)
