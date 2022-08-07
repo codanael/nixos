@@ -41,10 +41,6 @@ tee -a /mnt/etc/nixos/zfs.nix <<EOF
 { config, pkgs, ... }:
 
 { 
-  imports =
-    [ 
-      ./initpass.nix
-    ];
   boot.supportedFilesystems = [ "zfs" ];
   networking.hostId = "$(head -c 8 /etc/machine-id)";
 EOF
@@ -72,18 +68,16 @@ tee -a /mnt/etc/nixos/zfs.nix <<EOF
   };
   environment.etc."machine-id".source
     = "/persist/etc/machine-id";
-}
 EOF
 
 initPwd=$(mkpasswd -m SHA-512 -s)
 
-tee -a /mnt/etc/nixos/initpass.nix <<EOF
-{ config, pkgs, ... }:
-
-{ 
+tee -a /mnt/etc/nixos/zfs.nix <<EOF
   users.users.root.initialHashedPassword = "${initPwd}";
   users.users.$user.initialHashedPassword = "${initPwd}";
 }
 EOF
+
+cp ./configuration.nix /mnt/nixos/etc -v
 
 echo "nixos-install -v --show-trace --no-root-passwd --root /mnt && umount -Rl /mnt && zpool export -a"
