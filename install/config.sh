@@ -40,7 +40,12 @@ rm -f /mnt/etc/nixos/zfs.nix
 tee -a /mnt/etc/nixos/zfs.nix <<EOF
 { config, pkgs, ... }:
 
-{ boot.supportedFilesystems = [ "zfs" ];
+{ 
+  imports =
+    [ 
+      ./initpass.nix
+    ];
+  boot.supportedFilesystems = [ "zfs" ];
   networking.hostId = "$(head -c 8 /etc/machine-id)";
 EOF
 
@@ -67,12 +72,17 @@ tee -a /mnt/etc/nixos/zfs.nix <<EOF
   };
   environment.etc."machine-id".source
     = "/persist/etc/machine-id";
+}
 EOF
 
-rootPwd=$(mkpasswd -m SHA-512 -s)
+initPwd=$(mkpasswd -m SHA-512 -s)
 
-tee -a /mnt/etc/nixos/zfs.nix <<EOF
-users.users.root.initialHashedPassword = "${rootPwd}";
+tee -a /mnt/etc/nixos/initpass.nix <<EOF
+{ config, pkgs, ... }:
+
+{ 
+  users.users.root.initialHashedPassword = "${initPwd}";
+  users.users.$user.initialHashedPassword = "${initPwd}";
 }
 EOF
 
