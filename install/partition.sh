@@ -1,38 +1,48 @@
 #!/bin/bash
 
-disk=(/dev/disk/by-id/ata-QEMU_HARDDISK_QM00003)
-swap=8GiB
+DISK=(/dev/disk/by-id/ata-QEMU_HARDDISK_QM00003)
+SWAP=8
+# RPOOL = 200
 encryption=false
 zfsparam=""
 user="anael"
 
 
 # Check if disk var is set
-test -z $disk && echo "disk var not defined" && exit 1
+test -z $DISK && echo "DISK var not defined" && exit 1
 
 # Set encryption params if set to true
 if $encryption; then
 	zfsparam="$zfsparam -O encryption=aes-256-gcm -O keylocation=prompt -O keyformat=passphrase" 
 fi
 
-# Use mirror layout if more than one disk
-if [[ ${#disk[@]} -gt 1 ]]; then
+# Use mirror layout if more than one DISK
+if [[ ${#DISK[@]} -gt 1 ]]; then
 	zfsparam="$zfsparam mirror" 
 fi
 
 # Create partitions
-for x in ${disk}; do
+for x in ${DISK}; do
   echo $x
+  # Zapping disk
   sgdisk --zap-all $x
-  parted $x -- mklabel gpt
-  parted $x -- mkpart primary 512MiB -$swap
-  parted $x -- mkpart primary linux-swap -$swap 100%
-  parted $x -- mkpart ESP fat32 1MiB 512MiB
-  parted $x -- set 3 esp on
+  # EFI partition
+  sgdisk -n1:1M:+1G -t1:EF00 $x
+  # SWAP if size is defined
+  test -z $SWAP || sgdisk -n3:0:+${SWAP}G -t3:8200 $x
+  # Root pool takes all left space if not defined
+  if test -z $RPOOL; then
+      sgdisk -n2:0:0   -t2:BF00 $x
+  else
+      sgdisk -n2:0:+${RPOOL}G -t2:BF00 $x
+  fi
+  # Space left at the end for small difference between disks
+  sgdisk -a1 -n4:24K:+1000K -t4:EF02 $x
+  
   sleep 2
 
-  mkswap -L swap $x-part2
-  mkfs.fat -F 32 -n EFI $x-part3
+  mkswap -L swap $x-part3
+  mkfs.fat -F 32 -n EFI $x-part1
 done
 
 # Create ZFS pool
@@ -49,7 +59,7 @@ zpool create \
   -O relatime=on \
   -O xattr=sa \
   $zfsparam rpool \
-  "${disk[@]/%/-part1}"
+  "${DISK[@]/%/-part2}"
 
 mount -t tmpfs tmpfs /mnt
 
@@ -81,4 +91,10 @@ mkdir -p /mnt/etc/nixos
 mount --bind /mnt/persist/etc/nixos /mnt/etc/nixos
 
 mkdir /mnt/boot
-mount "${disk}-part3" /mnt/boot
+mount "${DISK}-part1" /mnt/boot
+
+mkdir -p /mnt/etc/zfs/
+rm -f /mnt/etc/zfs/zpool.cache
+touch /mnt/etc/zfs/zpool.cache
+chmod a-w /mnt/etc/zfs/zpool.cache
+chattr +i /mnt/etc/zfs/zpool.cache

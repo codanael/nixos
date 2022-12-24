@@ -1,19 +1,19 @@
 #!/bin/bash
 
-disk=(/dev/disk/by-id/ata-QEMU_HARDDISK_QM00003)
-swap=8GiB
+DISK=(/dev/disk/by-id/ata-QEMU_HARDDISK_QM00003)
+SWAP=8GiB
 encryption=false
 zfsparam=""
 user="anael"
 
 # Check if disk var is set
-test -z $disk && echo "disk var not defined" && exit 1
+test -z $DISK && echo "disk var not defined" && exit 1
 
 nixos-generate-config --root /mnt
 
 swapconf="swapDevices = ["
-for x in ${disk[@]}; do
-swapconf="$swapconf { device = \"$x-part2\";randomEncryption = true;}"
+for x in ${DISK[@]}; do
+swapconf="$swapconf { device = \"$x-part3\";randomEncryption = true;}"
 done
 
 swapconf="$swapconf ];"
@@ -43,6 +43,7 @@ tee -a /mnt/etc/nixos/zfs.nix <<EOF
 { 
   boot.supportedFilesystems = [ "zfs" ];
   networking.hostId = "$(head -c 8 /etc/machine-id)";
+  boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
 EOF
 
 tee -a /mnt/etc/nixos/zfs.nix <<EOF
