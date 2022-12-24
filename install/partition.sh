@@ -24,6 +24,7 @@ fi
 # Create partitions
 for x in ${DISK}; do
   echo $x
+  if ls $x-*; then wipefs -a $x-*; fi
   # Zapping disk
   sgdisk --zap-all $x
   # EFI partition
@@ -42,7 +43,7 @@ for x in ${DISK}; do
   sleep 2
 
   mkswap -L swap $x-part3
-  mkfs.fat -F 32 -n EFI $x-part1
+  mkfs.vfat -n EFI $x-part1
 done
 
 # Create ZFS pool
@@ -93,8 +94,4 @@ mount --bind /mnt/persist/etc/nixos /mnt/etc/nixos
 mkdir /mnt/boot
 mount "${DISK}-part1" /mnt/boot
 
-mkdir -p /mnt/etc/zfs/
-rm -f /mnt/etc/zfs/zpool.cache
-touch /mnt/etc/zfs/zpool.cache
-chmod a-w /mnt/etc/zfs/zpool.cache
-chattr +i /mnt/etc/zfs/zpool.cache
+chown -R 1001 /mnt/userdata/home/$user
